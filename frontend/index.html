@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HRControl - Gérez vos ressources humaines simplement</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>HRControl</h1>
+            <p class="slogan">Gérez vos ressources humaines simplement</p>
+        </header>
+
+        <nav>
+            <button class="nav-btn active" onclick="showPage('candidates')">Candidats</button>
+            <button class="nav-btn" onclick="showPage('employees')">Employés</button>
+            <button class="nav-btn" onclick="showPage('onboarding')">Onboarding</button>
+            <button class="nav-btn" onclick="showPage('dashboard')">Dashboard</button>
+            <button class="nav-btn" onclick="showPage('talent')">Talent</button>
+            <button class="nav-btn" onclick="showPage('turnover')">Turnover</button>
+            <button class="nav-btn" onclick="showPage('events')">Events</button>
+        </nav>
+
+        <main>
+            <!-- Page Candidats -->
+            <section id="page-candidates" class="page active">
+                <div class="card">
+                    <h2>Nouveau Candidat</h2>
+                    <form id="candidate-form">
+                        <div class="form-group">
+                            <label for="candidate-name">Nom complet</label>
+                            <input type="text" id="candidate-name" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="candidate-email">Email</label>
+                            <input type="email" id="candidate-email" required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Créer Candidat</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>Liste des Candidats</h2>
+                    <div id="candidates-list" class="list"></div>
+                </div>
+
+                <!-- Modal Détails Candidat -->
+                <div id="candidate-details-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal('candidate-details-modal')">&times;</span>
+                        <h2>Détails du Candidat</h2>
+                        <div id="candidate-details-content"></div>
+                    </div>
+                </div>
+
+                <!-- Modal Évaluation Candidat -->
+                <div id="candidate-evaluate-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal('candidate-evaluate-modal')">&times;</span>
+                        <h2>Évaluer le Candidat</h2>
+                        <form id="evaluate-form">
+                            <input type="hidden" id="evaluate-candidate-id">
+                            <div class="form-group">
+                                <label for="evaluate-score">Score (0-100)</label>
+                                <input type="number" id="evaluate-score" min="0" max="100" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="evaluate-comment">Commentaire</label>
+                                <textarea id="evaluate-comment" rows="4"></textarea>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-warning" onclick="generateAIEvaluation()">✨ Générer avec IA</button>
+                                <button type="submit" class="btn btn-primary">Enregistrer</button>
+                                <button type="button" class="btn btn-secondary" onclick="closeModal('candidate-evaluate-modal')">Annuler</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Page Employés -->
+            <section id="page-employees" class="page">
+                <div class="card">
+                    <h2>Liste des Employés</h2>
+                    <div id="employees-list" class="list"></div>
+                </div>
+
+                <div class="card">
+                    <h2>Nouvel Employé</h2>
+                    <form id="employee-form">
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="employee-name">Nom complet</label>
+                                <input type="text" id="employee-name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="employee-email">Email</label>
+                                <input type="email" id="employee-email" required>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="employee-date-embauche">Date d'embauche</label>
+                                <input type="date" id="employee-date-embauche" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="employee-statut">Statut</label>
+                                <select id="employee-statut" required>
+                                    <option value="ACTIF">ACTIF</option>
+                                    <option value="CONGE">CONGÉ</option>
+                                    <option value="FORMATION">FORMATION</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="employee-date-naissance">Date de naissance</label>
+                                <input type="date" id="employee-date-naissance">
+                            </div>
+                            <div class="form-group">
+                                <label for="employee-statut-familial">Statut familial</label>
+                                <select id="employee-statut-familial">
+                                    <option value="">Sélectionner</option>
+                                    <option value="célibataire">Célibataire</option>
+                                    <option value="marié">Marié</option>
+                                    <option value="divorcé">Divorcé</option>
+                                    <option value="veuf">Veuf</option>
+                                    <option value="en couple">En couple</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="employee-poste">Poste</label>
+                                <input type="text" id="employee-poste">
+                            </div>
+                            <div class="form-group">
+                                <label for="employee-departement">Département</label>
+                                <input type="text" id="employee-departement">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="employee-niveau">Niveau</label>
+                            <select id="employee-niveau">
+                                <option value="">Sélectionner</option>
+                                <option value="junior">Junior</option>
+                                <option value="intermédiaire">Intermédiaire</option>
+                                <option value="senior">Senior</option>
+                                <option value="directeur">Directeur</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="employee-score">Score (0-100)</label>
+                            <input type="number" id="employee-score" min="0" max="100" placeholder="50">
+                        </div>
+                        <h3>Rémunération et Avantages</h3>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="employee-salaire">Salaire base</label>
+                                <input type="number" id="employee-salaire" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label for="employee-prime">Prime</label>
+                                <input type="number" id="employee-prime" step="0.01">
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="employee-transport">Indemnité transport</label>
+                                <input type="number" id="employee-transport" step="0.01">
+                            </div>
+                            <div class="form-group">
+                                <label for="employee-assurance">Assurance</label>
+                                <input type="number" id="employee-assurance" step="0.01">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="employee-avantages">Autres avantages (transport/carburant, etc.)</label>
+                            <textarea id="employee-avantages" rows="2"></textarea>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Enregistrer Employé</button>
+                            <button type="button" class="btn btn-secondary" onclick="resetEmployeeForm()">Réinitialiser</button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Modal Détails Employé -->
+                <div id="employee-details-modal" class="modal">
+                    <div class="modal-content">
+                        <span class="close" onclick="closeModal('employee-details-modal')">&times;</span>
+                        <h2>Détails de l'Employé</h2>
+                        <div id="employee-details-content"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Page Onboarding -->
+            <section id="page-onboarding" class="page">
+                <div class="card">
+                    <h2>Progression Onboarding</h2>
+                    <div id="onboarding-list" class="list"></div>
+                </div>
+            </section>
+
+            <!-- Page Dashboard -->
+            <section id="page-dashboard" class="page">
+                <div class="dashboard-grid">
+                    <div class="stat-card">
+                        <h3>Total Candidats</h3>
+                        <p class="stat-value" id="stat-candidates">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Total Employés</h3>
+                        <p class="stat-value" id="stat-employees">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Candidats Approuvés</h3>
+                        <p class="stat-value" id="stat-approved">0</p>
+                    </div>
+                    <div class="stat-card">
+                        <h3>Onboarding Moyen</h3>
+                        <p class="stat-value" id="stat-onboarding">0%</p>
+                    </div>
+                </div>
+                
+                <div class="dashboard-grid" style="margin-top: 20px;">
+                    <div class="stat-card kpi-card" id="kpi-turnover">
+                        <h3>Employés à Risque</h3>
+                        <p class="stat-value" id="stat-turnover-risk">0</p>
+                        <p class="stat-badge" id="stat-turnover-badge">Stable</p>
+                    </div>
+                    <div class="stat-card kpi-card" id="kpi-talent">
+                        <h3>Répartition Talent</h3>
+                        <div id="talent-distribution">
+                            <p>High: <span id="talent-high">0</span></p>
+                            <p>Medium: <span id="talent-medium">0</span></p>
+                            <p>Low: <span id="talent-low">0</span></p>
+                        </div>
+                    </div>
+                    <div class="stat-card kpi-card" id="kpi-performance">
+                        <h3>Performance Moyenne</h3>
+                        <p class="stat-value" id="stat-performance-avg">0.0</p>
+                        <p class="stat-badge" id="stat-performance-badge">Moyen</p>
+                    </div>
+                </div>
+                
+                <div class="card" style="margin-top: 20px;">
+                    <h2>Analyse RH</h2>
+                    <div id="hr-recommendations" class="recommendations-container">
+                        <p>Chargement de l'analyse...</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Page Talent -->
+            <section id="page-talent" class="page">
+                <div class="card">
+                    <h2>9-Box Grid - Talent Matrix</h2>
+                    <div class="talent-grid" id="talent-grid">
+                        <div class="talent-box" data-performance="low" data-potential="low">
+                            <h3>Low / Low</h3>
+                            <div class="talent-employees" id="box-low-low"></div>
+                        </div>
+                        <div class="talent-box" data-performance="low" data-potential="medium">
+                            <h3>Low / Medium</h3>
+                            <div class="talent-employees" id="box-low-medium"></div>
+                        </div>
+                        <div class="talent-box" data-performance="low" data-potential="high">
+                            <h3>Low / High</h3>
+                            <div class="talent-employees" id="box-low-high"></div>
+                        </div>
+                        <div class="talent-box" data-performance="medium" data-potential="low">
+                            <h3>Medium / Low</h3>
+                            <div class="talent-employees" id="box-medium-low"></div>
+                        </div>
+                        <div class="talent-box" data-performance="medium" data-potential="medium">
+                            <h3>Medium / Medium</h3>
+                            <div class="talent-employees" id="box-medium-medium"></div>
+                        </div>
+                        <div class="talent-box" data-performance="medium" data-potential="high">
+                            <h3>Medium / High</h3>
+                            <div class="talent-employees" id="box-medium-high"></div>
+                        </div>
+                        <div class="talent-box" data-performance="high" data-potential="low">
+                            <h3>High / Low</h3>
+                            <div class="talent-employees" id="box-high-low"></div>
+                        </div>
+                        <div class="talent-box" data-performance="high" data-potential="medium">
+                            <h3>High / Medium</h3>
+                            <div class="talent-employees" id="box-high-medium"></div>
+                        </div>
+                        <div class="talent-box" data-performance="high" data-potential="high">
+                            <h3>High / High</h3>
+                            <div class="talent-employees" id="box-high-high"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Page Turnover -->
+            <section id="page-turnover" class="page">
+                <div class="card">
+                    <h2>Prédiction des Départs - Turnover</h2>
+                    <div class="turnover-list" id="turnover-list"></div>
+                </div>
+            </section>
+
+            <!-- Page Events -->
+            <section id="page-events" class="page">
+                <div class="card">
+                    <h2>Activités du Système - Events</h2>
+                    <div class="events-list" id="events-list"></div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Chatbot -->
+    <button id="chat-toggle">💬</button>
+    <div id="chat-panel" class="chat-panel">
+        <div class="chat-header">
+            🤖 Assistant RH
+            <button id="close-chat">✖</button>
+        </div>
+        <div id="chat-messages" class="chat-messages"></div>
+        <div class="chat-input">
+            <input id="chat-input" placeholder="Pose ta question RH..." />
+            <button onclick="sendMessage()">Envoyer</button>
+        </div>
+    </div>
+
+    <style>
+        .chat-panel {
+            position: fixed;
+            top: 0;
+            right: -400px;
+            width: 400px;
+            height: 100%;
+            background: rgba(30, 20, 60, 0.95);
+            backdrop-filter: blur(10px);
+            box-shadow: -5px 0 20px rgba(0,0,0,0.4);
+            transition: right 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            z-index: 9999;
+        }
+
+        .chat-panel.open {
+            right: 0;
+        }
+
+        .chat-header {
+            padding: 15px;
+            font-weight: bold;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            display: flex;
+            justify-content: space-between;
+            color: white;
+        }
+
+        .chat-header button {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 18px;
+            cursor: pointer;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+            color: white;
+        }
+
+        .chat-input {
+            display: flex;
+            padding: 10px;
+            gap: 10px;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+        }
+
+        .chat-input button {
+            padding: 10px 15px;
+            border-radius: 10px;
+            background: #6c5ce7;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+
+        #chat-toggle {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #6c5ce7;
+            color: white;
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            font-size: 20px;
+            border: none;
+            cursor: pointer;
+        }
+
+        .chat-messages p {
+            margin-bottom: 10px;
+            padding: 8px 12px;
+            border-radius: 10px;
+        }
+
+        .chat-messages .user-msg {
+            background: rgba(108, 92, 231, 0.3);
+            text-align: right;
+        }
+
+        .chat-messages .bot-msg {
+            background: rgba(162, 155, 254, 0.2);
+        }
+
+        .talent-employee {
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+        }
+
+        .talent-employee-name {
+            font-weight: bold;
+        }
+
+        .talent-employee-email {
+            font-size: 12px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .btn-report {
+            background: linear-gradient(135deg, #7b2ff7, #f107a3);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .btn-report:hover {
+            transform: scale(1.05);
+            opacity: 0.9;
+        }
+
+        .kpi-card {
+            transition: all 0.3s ease;
+        }
+
+        .kpi-card.status-green {
+            border: 2px solid #28a745;
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.3);
+        }
+
+        .kpi-card.status-orange {
+            border: 2px solid #fd7e14;
+            box-shadow: 0 0 10px rgba(253, 126, 20, 0.3);
+        }
+
+        .kpi-card.status-red {
+            border: 2px solid #dc3545;
+            box-shadow: 0 0 10px rgba(220, 53, 69, 0.3);
+        }
+
+        .stat-badge {
+            font-size: 12px;
+            font-weight: bold;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 8px;
+            display: inline-block;
+        }
+
+        .stat-badge.badge-green {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+        }
+
+        .stat-badge.badge-orange {
+            background: rgba(253, 126, 20, 0.2);
+            color: #fd7e14;
+        }
+
+        .stat-badge.badge-red {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+        }
+
+        .recommendations-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .recommendation-item {
+            padding: 12px;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.05);
+            border-left: 4px solid;
+        }
+
+        .recommendation-item.warning {
+            border-left-color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        .recommendation-item.success {
+            border-left-color: #28a745;
+            background: rgba(40, 167, 69, 0.1);
+        }
+
+        #talent-distribution p {
+            margin: 5px 0;
+            font-size: 14px;
+        }
+
+        #talent-distribution span {
+            font-weight: bold;
+        }
+
+        .status-en-attente {
+            background: #555;
+            color: white;
+        }
+
+        .status-en-entretien {
+            background: #f1c40f;
+            color: white;
+        }
+
+        .status-accepte {
+            background: #2ecc71;
+            color: white;
+        }
+
+        .status-refuse {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .status-select {
+            width: auto;
+            padding: 6px;
+            border-radius: 4px;
+            border: 1px solid rgba(255,255,255,0.2);
+            background: rgba(255,255,255,0.1);
+            color: white;
+            cursor: pointer;
+        }
+
+        .status-select option {
+            background: #1a1a2e;
+            color: white;
+        }
+    </style>
+
+    <script src="app.js"></script>
+</body>
+</html>
